@@ -1,5 +1,14 @@
+from flask import Flask
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+import threading
+
+# Flask app setup for UptimeRobot
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Bot is running!"
 
 # Replace 'YOUR_BOT_TOKEN' with your actual bot token
 BOT_TOKEN = '8084491198:AAER87m72_f8OcD1YzSBG1l2BctGI0b-fTY'
@@ -22,7 +31,7 @@ async def handle_feedback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     await update.message.reply_text('Thank you for your feedback!')
 
 # Main function to set up the bot
-def main():
+def run_bot():
     # Set up the Application
     application = Application.builder().token(BOT_TOKEN).build()
 
@@ -35,4 +44,8 @@ def main():
     application.run_polling()
 
 if __name__ == '__main__':
-    main()
+    # Start the Telegram bot in a separate thread
+    threading.Thread(target=run_bot).start()
+
+    # Run the Flask app
+    app.run(host='0.0.0.0', port=8080)
